@@ -29,7 +29,7 @@ export default function PlayfulGame({ onNext }: { onNext: () => void }) {
     >
       <div className="text-center z-10 p-8">
         <h2 className="text-4xl md:text-5xl font-serif text-pink-500 font-bold mb-12 drop-shadow-sm">
-          Are you an idiot?
+          Ready for the next surprise?
         </h2>
         
         <div className="flex justify-center items-center gap-12 h-32 relative">
@@ -37,7 +37,7 @@ export default function PlayfulGame({ onNext }: { onNext: () => void }) {
             onClick={onNext}
             className="px-10 py-4 bg-pink-400 hover:bg-pink-500 text-white rounded-xl font-bold text-xl shadow-lg transition-transform transform hover:scale-105"
           >
-            Yes
+            Absolutely!
           </button>
 
           <motion.button 
@@ -48,7 +48,7 @@ export default function PlayfulGame({ onNext }: { onNext: () => void }) {
             className="px-10 py-4 bg-slate-300 text-slate-700 rounded-xl font-bold text-xl shadow-lg absolute right-0 md:relative md:right-auto"
             style={{ zIndex: 20 }}
           >
-            No
+            Not yet
           </motion.button>
         </div>
       </div>

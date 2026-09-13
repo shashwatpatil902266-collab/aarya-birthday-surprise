@@ -5,6 +5,10 @@ import { motion } from 'framer-motion';
 import confetti from 'canvas-confetti';
 import { config } from '../config';
 
+const flowers = [
+  [-4.1, 2.8, -6], [3.8, 2.2, -7], [-3.5, -2.4, -8], [3.1, -2.5, -6.5], [0.1, 3.7, -9],
+] as const;
+
 export default function MainReveal({ onNext }: { onNext: () => void }) {
   const [showNext, setShowNext] = useState(false);
 
@@ -52,9 +56,9 @@ export default function MainReveal({ onNext }: { onNext: () => void }) {
           <Sparkles count={150} scale={12} size={3} speed={0.2} opacity={0.5} color="#ec4899" />
           
           {/* Abstract Lily / Flower shapes in background */}
-          {[...Array(5)].map((_, i) => (
+          {flowers.map((position, i) => (
             <Float key={i} speed={1.5} rotationIntensity={0.5} floatIntensity={2}>
-              <group position={[(Math.random() - 0.5) * 10, (Math.random() - 0.5) * 8, -5 - Math.random() * 5]}>
+              <group position={position}>
                 <mesh rotation={[Math.PI / 4, Math.PI / 4, 0]}>
                   <octahedronGeometry args={[0.5]} />
                   <meshStandardMaterial color={i % 2 === 0 ? "#fbcfe8" : "#e9d5ff"} />
@@ -73,12 +77,8 @@ export default function MainReveal({ onNext }: { onNext: () => void }) {
           transition={{ duration: 1.5, type: "spring" }}
           className="bg-white/40 backdrop-blur-md p-10 rounded-3xl border border-white/60 shadow-xl max-w-2xl pointer-events-auto"
         >
-          {/* Jung Kook Poster (Subtle) */}
-          <div className="absolute -top-12 -right-8 w-24 h-32 bg-slate-200 border-4 border-white shadow-lg rotate-12 flex items-center justify-center overflow-hidden">
-             <div className="text-[10px] text-slate-400 font-mono text-center p-1">
-               Jung Kook<br/>Poster<br/>(Replace in /public)
-             </div>
-             <img src="/jungkook.jpg" alt="" className="absolute inset-0 w-full h-full object-cover opacity-60 mix-blend-multiply" onError={(e) => e.currentTarget.style.display = 'none'} />
+          <div className="absolute -right-3 -top-8 h-24 w-20 overflow-hidden border-4 border-white bg-slate-200 shadow-lg rotate-12 sm:-right-8 sm:-top-12 sm:h-32 sm:w-24">
+             <img src="/jungkook.jpg" alt="Jung Kook" className="h-full w-full object-cover opacity-75" />
           </div>
 
           <h1 className="text-4xl md:text-6xl font-serif text-pink-500 font-bold mb-4 drop-shadow-sm">

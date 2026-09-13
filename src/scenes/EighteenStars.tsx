@@ -18,7 +18,7 @@ export default function EighteenStars({ onNext }: { onNext: () => void }) {
 
   return (
     <motion.div 
-      className="w-full h-full relative bg-pearl flex flex-col items-center pt-20 px-4"
+      className="w-full h-full relative overflow-y-auto bg-pearl flex flex-col items-center px-4 pb-28 pt-20 md:pt-24"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0, transition: { duration: 1 } }}
@@ -28,10 +28,10 @@ export default function EighteenStars({ onNext }: { onNext: () => void }) {
       </h2>
       
       <p className="text-slate-500 mb-12 text-center max-w-md">
-        Tap each star to reveal a message.
+        Tap every star to unlock the letter.
       </p>
 
-      <div className="grid grid-cols-6 gap-4 md:gap-8 max-w-3xl mx-auto z-10">
+      <div className="grid grid-cols-6 gap-3 sm:gap-4 md:gap-8 max-w-3xl mx-auto z-10">
         {Array.from({ length: 18 }).map((_, i) => {
           const isRead = readStars.includes(i);
           return (
@@ -62,7 +62,7 @@ export default function EighteenStars({ onNext }: { onNext: () => void }) {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="mt-16 bg-white p-6 rounded-2xl shadow-xl max-w-lg w-full text-center border border-pink-100 z-10"
+            className="mt-8 md:mt-12 bg-white p-5 md:p-6 rounded-2xl shadow-xl max-w-lg w-full text-center border border-pink-100 z-10"
           >
             <p className="text-lg md:text-xl font-serif text-slate-700 leading-relaxed">
               {activeMessage}
@@ -76,7 +76,7 @@ export default function EighteenStars({ onNext }: { onNext: () => void }) {
           <motion.div
             initial={{ opacity: 0, scale: 0.5 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="absolute bottom-12 z-20"
+            className="fixed bottom-6 z-20"
           >
             <button
               onClick={onNext}

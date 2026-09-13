@@ -4,6 +4,12 @@ import { Stars, Float, Sparkles, OrbitControls } from '@react-three/drei';
 import { motion } from 'framer-motion';
 import confetti from 'canvas-confetti';
 
+const crystals = [
+  [-7, 4, -6, 0.35], [-5, -3.5, -7, 0.42], [-2.5, 2.7, -5, 0.28], [1.4, -4.2, -8, 0.46],
+  [3.9, 3.1, -7, 0.32], [7.1, -2.5, -6, 0.38], [-7.8, -1.2, -9, 0.25], [6.8, 4.5, -8, 0.31],
+  [-0.7, 4.8, -10, 0.24], [0.5, -1.5, -7, 0.36],
+] as const;
+
 export default function Finale({ onRestart }: { onRestart: () => void }) {
   useEffect(() => {
     const duration = 15 * 1000;
@@ -50,9 +56,9 @@ export default function Finale({ onRestart }: { onRestart: () => void }) {
           
           <Float speed={1} rotationIntensity={0.5} floatIntensity={1}>
             <group position={[0, 0, -10]}>
-              {[...Array(10)].map((_, i) => (
-                <mesh key={i} position={[(Math.random() - 0.5) * 20, (Math.random() - 0.5) * 20, (Math.random() - 0.5) * 10]}>
-                  <octahedronGeometry args={[Math.random() * 0.5 + 0.2]} />
+              {crystals.map(([x, y, z, size], i) => (
+                <mesh key={i} position={[x, y, z]}>
+                  <octahedronGeometry args={[size]} />
                   <meshBasicMaterial color={['#f472b6', '#d8b4fe', '#ffffff'][i % 3]} />
                 </mesh>
               ))}
