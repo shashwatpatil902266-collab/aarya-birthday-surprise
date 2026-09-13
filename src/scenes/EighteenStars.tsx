@@ -31,7 +31,7 @@ export default function EighteenStars({ onNext }: { onNext: () => void }) {
         Every star holds a different birthday paragraph. Read them all to unlock the letter.
       </p>
 
-      <div className="grid grid-cols-6 gap-3 sm:gap-4 md:gap-8 max-w-3xl mx-auto z-10">
+      <div className="grid grid-cols-3 sm:grid-cols-6 gap-3 sm:gap-4 md:gap-8 max-w-3xl mx-auto z-10">
         {Array.from({ length: 18 }).map((_, i) => {
           const isRead = readStars.includes(i);
           return (

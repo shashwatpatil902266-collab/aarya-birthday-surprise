@@ -16,7 +16,7 @@ export default function PhotoGalaxy({ onNext }: { onNext: () => void }) {
 
   return (
     <motion.section
-      className="relative flex h-full w-full flex-col items-center overflow-y-auto bg-slate-950 px-4 pb-28 pt-20 text-white md:justify-center md:pb-24 md:pt-16"
+      className="relative flex h-full w-full flex-col items-center overflow-y-auto bg-slate-950 px-4 pb-28 pt-16 text-white md:pb-24 md:pt-16"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0, transition: { duration: 0.45 } }}

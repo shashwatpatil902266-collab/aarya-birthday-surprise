@@ -8,7 +8,7 @@ export default function TheLetter({ onNext }: { onNext: () => void }) {
 
   return (
     <motion.div 
-      className="w-full h-full relative bg-pink-50 flex items-center justify-center p-4 md:p-12 overflow-y-auto"
+      className="w-full h-full relative bg-pink-50 flex flex-col items-center justify-start p-4 py-8 md:p-12 md:py-12 overflow-y-auto"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0, transition: { duration: 1 } }}
@@ -21,7 +21,7 @@ export default function TheLetter({ onNext }: { onNext: () => void }) {
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 1.2, opacity: 0 }}
             onClick={() => setIsOpen(true)}
-            className="cursor-pointer bg-white w-64 h-48 rounded-lg shadow-2xl flex flex-col items-center justify-center border-2 border-pink-200 hover:border-pink-400 transition-colors group relative overflow-hidden"
+            className="cursor-pointer my-auto bg-white w-64 h-48 rounded-lg shadow-2xl flex flex-col items-center justify-center border-2 border-pink-200 hover:border-pink-400 transition-colors group relative overflow-hidden"
           >
             <div className="absolute top-0 w-0 h-0 border-l-[128px] border-l-transparent border-r-[128px] border-r-transparent border-t-[100px] border-t-pink-100 z-10"></div>
             <Mail className="text-pink-300 w-16 h-16 mt-4 group-hover:scale-110 transition-transform" />
@@ -33,7 +33,7 @@ export default function TheLetter({ onNext }: { onNext: () => void }) {
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
-            className="bg-[#fcfaf5] w-full max-w-5xl rounded-sm shadow-2xl flex flex-col md:flex-row overflow-hidden"
+            className="bg-[#fcfaf5] w-full max-w-5xl rounded-sm shadow-2xl flex flex-col md:flex-row overflow-hidden my-auto"
             style={{
               // TODO: self-host this texture in /public once available, to avoid the external dependency
               backgroundImage: 'url("https://www.transparenttextures.com/patterns/handmade-paper.png")',
@@ -56,8 +56,8 @@ export default function TheLetter({ onNext }: { onNext: () => void }) {
             </div>
 
             {/* Letter Section */}
-            <div className="w-full md:w-3/5 p-8 md:p-12 relative flex flex-col justify-between" style={{ minHeight: '600px' }}>
-              <div className="whitespace-pre-wrap font-handwriting text-slate-800 text-3xl md:text-4xl leading-relaxed">
+            <div className="w-full md:w-3/5 p-6 md:p-12 relative flex flex-col justify-between md:min-h-[600px]">
+              <div className="whitespace-pre-wrap font-handwriting text-slate-800 text-2xl sm:text-3xl md:text-4xl leading-relaxed">
                 {config.letter}
               </div>
               

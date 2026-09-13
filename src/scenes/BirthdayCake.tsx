@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import confetti from 'canvas-confetti';
 import * as THREE from 'three';
 import { prefersReducedMotion } from '../config';
+import { CanvasErrorBoundary } from '../components/CanvasErrorBoundary';
 
 function Candle({ position, isLit, flickering }: { position: [number, number, number], isLit: boolean, flickering: boolean }) {
   const flameRef = useRef<THREE.Mesh>(null);
@@ -131,6 +132,24 @@ function Cake({ stage }: { stage: number }) {
 
 export default function BirthdayCake({ onNext }: { onNext: () => void }) {
   const [stage, setStage] = useState(0); // 0: lit, 1: flickering, 2: blown out
+  const pointerStartRef = useRef<{ x: number; y: number } | null>(null);
+
+  const handlePointerDown = (e: React.PointerEvent) => {
+    pointerStartRef.current = { x: e.clientX, y: e.clientY };
+  };
+
+  const handlePointerUp = (e: React.PointerEvent) => {
+    if (!pointerStartRef.current) return;
+    const dx = e.clientX - pointerStartRef.current.x;
+    const dy = e.clientY - pointerStartRef.current.y;
+    const distance = Math.hypot(dx, dy);
+    pointerStartRef.current = null;
+
+    // Suppress interaction if the movement was a drag/orbit camera gesture
+    if (distance > 10) return;
+
+    handleInteraction();
+  };
 
   const handleInteraction = () => {
     if (stage === 0) {
@@ -153,16 +172,22 @@ export default function BirthdayCake({ onNext }: { onNext: () => void }) {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0, transition: { duration: 1 } }}
     >
-      <div className="absolute inset-0 z-0 cursor-pointer" onClick={handleInteraction}>
-        <Canvas camera={{ position: [0, 1.5, 5], fov: 50 }}>
-          <ambientLight intensity={stage < 2 ? 0.2 : 0.8} />
-          <directionalLight position={[5, 5, 5]} intensity={stage < 2 ? 0.3 : 1} />
-          {stage < 2 && (
-            <pointLight position={[0, 1.5, 0]} intensity={stage === 1 ? 1.5 : 1} color="#fef08a" distance={4} />
-          )}
-          <Cake stage={stage} />
-          <OrbitControls enableZoom={false} maxPolarAngle={Math.PI/2 + 0.1} minPolarAngle={Math.PI/4} />
-        </Canvas>
+      <div 
+        className="absolute inset-0 z-0 cursor-pointer" 
+        onPointerDown={handlePointerDown}
+        onPointerUp={handlePointerUp}
+      >
+        <CanvasErrorBoundary fallbackGradient="bg-slate-900">
+          <Canvas dpr={[1, 1.5]} camera={{ position: [0, 1.5, 5], fov: 50 }}>
+            <ambientLight intensity={stage < 2 ? 0.2 : 0.8} />
+            <directionalLight position={[5, 5, 5]} intensity={stage < 2 ? 0.3 : 1} />
+            {stage < 2 && (
+              <pointLight position={[0, 1.5, 0]} intensity={stage === 1 ? 1.5 : 1} color="#fef08a" distance={4} />
+            )}
+            <Cake stage={stage} />
+            <OrbitControls enableZoom={false} maxPolarAngle={Math.PI/2 + 0.1} minPolarAngle={Math.PI/4} />
+          </Canvas>
+        </CanvasErrorBoundary>
       </div>
 
       <div className="absolute top-10 w-full flex justify-center z-10 pointer-events-none">

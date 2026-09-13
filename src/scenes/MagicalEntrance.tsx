@@ -2,6 +2,7 @@ import { Canvas } from '@react-three/fiber';
 import { Sparkles, Float, Stars, PresentationControls } from '@react-three/drei';
 import { motion } from 'framer-motion';
 import { prefersReducedMotion } from '../config';
+import { CanvasErrorBoundary } from '../components/CanvasErrorBoundary';
 
 export default function MagicalEntrance({ onStart }: { onStart: () => void }) {
   return (
@@ -14,11 +15,12 @@ export default function MagicalEntrance({ onStart }: { onStart: () => void }) {
       <div className="absolute inset-0 bg-gradient-to-b from-indigo-950 via-purple-900 to-pink-900" />
       
       <div className="absolute inset-0 z-0">
-        <Canvas camera={{ position: [0, 0, 5], fov: 45 }}>
-          <ambientLight intensity={0.5} />
-          <pointLight position={[10, 10, 10]} intensity={1} />
-          <Stars radius={100} depth={50} count={1800} factor={4} saturation={0} fade speed={1} />
-          {!prefersReducedMotion && <Sparkles count={80} scale={10} size={2} speed={0.4} opacity={0.3} color="#fbcfe8" />}
+        <CanvasErrorBoundary fallbackGradient="bg-gradient-to-b from-indigo-950 via-purple-900 to-pink-900">
+          <Canvas dpr={[1, 1.5]} camera={{ position: [0, 0, 5], fov: 45 }}>
+            <ambientLight intensity={0.5} />
+            <pointLight position={[10, 10, 10]} intensity={1} />
+            <Stars radius={100} depth={50} count={700} factor={4} saturation={0} fade speed={1} />
+            {!prefersReducedMotion && <Sparkles count={40} scale={10} size={2} speed={0.4} opacity={0.3} color="#fbcfe8" />}
           
           <PresentationControls
             global
@@ -51,7 +53,8 @@ export default function MagicalEntrance({ onStart }: { onStart: () => void }) {
             </Float>
           </PresentationControls>
         </Canvas>
-      </div>
+      </CanvasErrorBoundary>
+    </div>
 
       <div className="absolute inset-0 z-10 flex flex-col items-center justify-center pointer-events-none">
         <motion.div 

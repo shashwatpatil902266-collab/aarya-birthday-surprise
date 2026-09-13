@@ -4,6 +4,7 @@ import { Stars, Float, Sparkles, OrbitControls } from '@react-three/drei';
 import { motion } from 'framer-motion';
 import confetti from 'canvas-confetti';
 import { prefersReducedMotion } from '../config';
+import { CanvasErrorBoundary } from '../components/CanvasErrorBoundary';
 
 const crystals = [
   [-7, 4, -6, 0.35], [-5, -3.5, -7, 0.42], [-2.5, 2.7, -5, 0.28], [1.4, -4.2, -8, 0.46],
@@ -50,31 +51,33 @@ export default function Finale({ onRestart }: { onRestart: () => void }) {
       exit={{ opacity: 0, transition: { duration: 1 } }}
     >
       <div className="absolute inset-0 z-0">
-        <Canvas camera={{ position: [0, 0, 10], fov: 60 }}>
-          <ambientLight intensity={0.5} />
-          <Stars radius={100} depth={50} count={1800} factor={4} saturation={0} fade speed={2} />
-          {!prefersReducedMotion && <Sparkles count={160} scale={20} size={4} speed={0.5} opacity={0.5} color="#f9a8d4" />}
-          
-          <Float speed={prefersReducedMotion ? 0 : 1} rotationIntensity={prefersReducedMotion ? 0 : 0.5} floatIntensity={prefersReducedMotion ? 0 : 1}>
-            <group position={[0, 0, -10]}>
-              {crystals.map(([x, y, z, size], i) => (
-                <mesh key={i} position={[x, y, z]}>
-                  <octahedronGeometry args={[size]} />
-                  <meshBasicMaterial color={['#f472b6', '#d8b4fe', '#ffffff'][i % 3]} />
-                </mesh>
-              ))}
-            </group>
-          </Float>
-          <OrbitControls autoRotate={!prefersReducedMotion} autoRotateSpeed={0.5} enableZoom={false} enablePan={false} />
-        </Canvas>
+        <CanvasErrorBoundary fallbackGradient="bg-slate-900">
+          <Canvas dpr={[1, 1.5]} camera={{ position: [0, 0, 10], fov: 60 }}>
+            <ambientLight intensity={0.5} />
+            <Stars radius={100} depth={50} count={700} factor={4} saturation={0} fade speed={2} />
+            {!prefersReducedMotion && <Sparkles count={50} scale={20} size={4} speed={0.5} opacity={0.5} color="#f9a8d4" />}
+            
+            <Float speed={prefersReducedMotion ? 0 : 1} rotationIntensity={prefersReducedMotion ? 0 : 0.5} floatIntensity={prefersReducedMotion ? 0 : 1}>
+              <group position={[0, 0, -10]}>
+                {crystals.map(([x, y, z, size], i) => (
+                  <mesh key={i} position={[x, y, z]}>
+                    <octahedronGeometry args={[size]} />
+                    <meshBasicMaterial color={['#f472b6', '#d8b4fe', '#ffffff'][i % 3]} />
+                  </mesh>
+                ))}
+              </group>
+            </Float>
+            <OrbitControls autoRotate={!prefersReducedMotion} autoRotateSpeed={0.5} enableZoom={false} enablePan={false} />
+          </Canvas>
+        </CanvasErrorBoundary>
       </div>
 
-      <div className="absolute inset-0 z-10 flex flex-col items-center justify-center p-6 pointer-events-none">
+      <div className="absolute inset-0 z-10 flex flex-col items-center justify-center p-4 sm:p-6 pointer-events-none">
         <motion.div
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 1.5, delay: 1 }}
-          className="text-center bg-black/40 p-10 rounded-3xl backdrop-blur-md border border-pink-500/30 shadow-2xl pointer-events-auto"
+          className="text-center bg-black/40 p-6 sm:p-10 rounded-3xl backdrop-blur-md border border-pink-500/30 shadow-2xl pointer-events-auto"
         >
           <h1 className="text-4xl md:text-6xl font-serif text-pink-300 font-bold mb-6 drop-shadow-lg">
             Happy 18th Birthday,<br />Miss Marshmallow!

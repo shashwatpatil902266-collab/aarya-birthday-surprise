@@ -46,7 +46,7 @@ export default function App() {
     return saved ? parseInt(saved, 10) : 1;
   });
   
-  const [isMuted, setIsMuted] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const nextScene = () => setCurrentScene((prev) => {
@@ -64,34 +64,38 @@ export default function App() {
   const toggleMute = () => {
     if (audioRef.current) {
       if (audioRef.current.paused) {
-        // Acting as a resume button
         audioRef.current.muted = false;
-        setIsMuted(false);
-        audioRef.current.play().catch(e => console.log("Audio play failed:", e));
+        audioRef.current.play().then(() => setIsPlaying(true)).catch(e => console.log("Audio play failed:", e));
       } else {
-        audioRef.current.muted = !isMuted;
-        setIsMuted(!isMuted);
+        const nextMuted = !audioRef.current.muted;
+        audioRef.current.muted = nextMuted;
+        setIsPlaying(!nextMuted);
       }
     }
   };
 
   useEffect(() => {
-    if (!audioRef.current) {
-      const audio = new Audio('/instrumental.mp3');
+    let audio = audioRef.current;
+    if (!audio) {
+      audio = new Audio('/instrumental.mp3');
       audio.loop = true;
       audio.volume = 0.35;
+      audio.preload = 'auto';
+
+      const onPlay = () => setIsPlaying(true);
+      const onPause = () => setIsPlaying(false);
+
+      audio.addEventListener('play', onPlay);
+      audio.addEventListener('pause', onPause);
       audioRef.current = audio;
       
-      // If we resumed midway, try to resume audio (might need user interaction though)
+      // If we resumed midway, try to resume audio
       if (currentScene > 1) {
-        audioRef.current.play().catch(() => console.log("Audio needs user interaction to resume"));
+        audio.play().catch(() => console.log("Audio needs user interaction to resume"));
       }
     }
 
     return () => {
-      // Don't pause on simple re-renders, but keeping remote's cleanup logic just in case
-      // Actually, since we're using lazy loading and React 18, we might mount/unmount.
-      // Better to let audioRef persist and just pause on actual unmount.
       if (audioRef.current) {
         audioRef.current.pause();
       }
@@ -105,15 +109,15 @@ export default function App() {
   };
 
   return (
-    <div className="w-screen h-[100dvh] overflow-hidden bg-pearl text-slate-800 relative">
+    <div className="fixed inset-0 w-full h-full h-screen h-[100dvh] overflow-hidden bg-pearl text-slate-800">
       {/* Audio Toggle (Fix 7) */}
       {currentScene > 1 && (
         <button
           onClick={toggleMute}
           className="absolute top-4 right-4 z-50 p-3 bg-white/30 backdrop-blur-md border border-white/40 rounded-full shadow-md text-pink-500 hover:bg-white/50 transition-colors"
-          aria-label={isMuted ? "Unmute" : "Mute"}
+          aria-label={isPlaying ? "Mute" : "Play music"}
         >
-          {isMuted ? (
+          {!isPlaying ? (
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 5L6 9H2v6h4l5 4V5z"></path><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>
           ) : (
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 5L6 9H2v6h4l5 4V5z"></path><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>

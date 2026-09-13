@@ -30,7 +30,7 @@ export default function BalloonMessages({ onNext }: { onNext: () => void }) {
 
   return (
     <motion.section
-      className="relative flex h-full w-full flex-col items-center overflow-hidden bg-gradient-to-b from-[#fff5f8] via-[#f8f0ff] to-[#e9dcfb] px-4 pb-24 pt-20"
+      className="relative flex h-full w-full flex-col items-center overflow-y-auto bg-gradient-to-b from-[#fff5f8] via-[#f8f0ff] to-[#e9dcfb] px-4 pb-28 pt-12 sm:pt-20"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0, transition: { duration: 0.45 } }}

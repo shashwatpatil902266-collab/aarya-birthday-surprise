@@ -8,15 +8,20 @@ export default function PlayfulGame({ onNext }: { onNext: () => void }) {
   const originalPosRef = useRef({ left: 0, top: 0, width: 0, height: 0 });
 
   useLayoutEffect(() => {
-    if (btnRef.current) {
-      const rect = btnRef.current.getBoundingClientRect();
-      originalPosRef.current = {
-        left: rect.left,
-        top: rect.top,
-        width: rect.width,
-        height: rect.height
-      };
-    }
+    const updateOrig = () => {
+      if (btnRef.current) {
+        const rect = btnRef.current.getBoundingClientRect();
+        originalPosRef.current = {
+          left: rect.left,
+          top: rect.top,
+          width: rect.width,
+          height: rect.height
+        };
+      }
+    };
+    updateOrig();
+    window.addEventListener('resize', updateOrig);
+    return () => window.removeEventListener('resize', updateOrig);
   }, []);
 
   const moveNoButton = () => {
@@ -34,9 +39,15 @@ export default function PlayfulGame({ onNext }: { onNext: () => void }) {
     const maxMoveUp = Math.max(0, relativeOrigY - 20);
     const maxMoveDown = Math.max(0, container.height - (relativeOrigY + orig.height) - 20);
     
-    // Random position within these strict bounds
-    const randomX = (Math.random() * (maxMoveLeft + maxMoveRight)) - maxMoveLeft;
-    const randomY = (Math.random() * (maxMoveUp + maxMoveDown)) - maxMoveUp;
+    let randomX = (Math.random() * (maxMoveLeft + maxMoveRight)) - maxMoveLeft;
+    let randomY = (Math.random() * (maxMoveUp + maxMoveDown)) - maxMoveUp;
+
+    // Prevent landing directly on top of the "Absolutely!" button
+    if (Math.abs(randomX + 130) < 110 && Math.abs(randomY) < 50) {
+      randomY = randomY >= 0 ? randomY + 90 : randomY - 90;
+    } else if (Math.abs(randomX) < 60 && randomY > -140 && randomY < -30) {
+      randomX = randomX >= 0 ? randomX + 110 : randomX - 110;
+    }
 
     setNoPosition({ x: randomX, y: randomY });
   };
@@ -49,15 +60,15 @@ export default function PlayfulGame({ onNext }: { onNext: () => void }) {
       exit={{ opacity: 0, transition: { duration: 1 } }}
       ref={containerRef}
     >
-      <div className="text-center z-10 p-8">
-        <h2 className="text-4xl md:text-5xl font-serif text-pink-500 font-bold mb-12 drop-shadow-sm">
+      <div className="text-center z-10 p-6 sm:p-8">
+        <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif text-pink-500 font-bold mb-8 sm:mb-12 drop-shadow-sm">
           Ready for the next surprise?
         </h2>
         
-        <div className="flex justify-center items-center gap-12 h-32 relative">
+        <div className="flex flex-col sm:flex-row justify-center items-center gap-6 sm:gap-12 min-h-32 relative">
           <button 
             onClick={onNext}
-            className="px-10 py-4 bg-pink-400 hover:bg-pink-500 text-white rounded-xl font-bold text-xl shadow-lg transition-transform transform hover:scale-105"
+            className="px-8 sm:px-10 py-3 sm:py-4 bg-pink-400 hover:bg-pink-500 text-white rounded-xl font-bold text-lg sm:text-xl shadow-lg transition-transform transform hover:scale-105 active:scale-95"
           >
             Absolutely!
           </button>
@@ -65,10 +76,11 @@ export default function PlayfulGame({ onNext }: { onNext: () => void }) {
           <motion.button 
             ref={btnRef}
             onMouseEnter={moveNoButton}
+            onTouchStart={moveNoButton}
             onClick={moveNoButton}
             animate={{ x: noPosition.x, y: noPosition.y }}
             transition={{ type: "spring", stiffness: 300, damping: 20 }}
-            className="px-10 py-4 bg-slate-300 text-slate-700 rounded-xl font-bold text-xl shadow-lg absolute right-0 md:relative md:right-auto"
+            className="px-8 sm:px-10 py-3 sm:py-4 bg-slate-300 text-slate-700 rounded-xl font-bold text-lg sm:text-xl shadow-lg relative"
             style={{ zIndex: 20 }}
           >
             Not yet
