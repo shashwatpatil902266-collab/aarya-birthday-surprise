@@ -16,8 +16,8 @@ export default function MagicalEntrance({ onStart }: { onStart: () => void }) {
         <Canvas camera={{ position: [0, 0, 5], fov: 45 }}>
           <ambientLight intensity={0.5} />
           <pointLight position={[10, 10, 10]} intensity={1} />
-          <Stars radius={100} depth={50} count={5000} factor={4} saturation={0} fade speed={1} />
-          <Sparkles count={200} scale={10} size={2} speed={0.4} opacity={0.3} color="#fbcfe8" />
+          <Stars radius={100} depth={50} count={1800} factor={4} saturation={0} fade speed={1} />
+          <Sparkles count={80} scale={10} size={2} speed={0.4} opacity={0.3} color="#fbcfe8" />
           
           <PresentationControls
             global

@@ -7,12 +7,12 @@ const rotations = [-7, 5, -3, 7, -5, 4, -6, 3, -4, 6, -2];
 const photos = Array.from({ length: 11 }, (_, index) => ({
   id: index,
   url: `/photos/${String(index + 1).padStart(2, '0')}.jpg`,
-  label: `Memory ${index + 1}`,
+  label: index === 10 ? 'Aarya and Aashu' : `Memory ${index + 1}`,
   rotation: rotations[index],
 }));
 
 export default function PhotoGalaxy({ onNext }: { onNext: () => void }) {
-  const [activePhoto, setActivePhoto] = useState(0);
+  const [activePhoto, setActivePhoto] = useState(photos.length - 1);
 
   return (
     <motion.section
@@ -36,20 +36,22 @@ export default function PhotoGalaxy({ onNext }: { onNext: () => void }) {
           <p className="mt-2 text-sm text-violet-100 md:text-base">Tap a photo to bring that moment into focus.</p>
         </div>
 
-        <div className="grid gap-5 lg:grid-cols-[1.1fr_.9fr] lg:items-center lg:gap-10">
+        <div className="grid gap-5 md:grid-cols-[1.05fr_.95fr] md:items-center md:gap-8 lg:grid-cols-[1.1fr_.9fr] lg:gap-10">
           <motion.figure
             key={activePhoto}
             initial={{ opacity: 0, scale: 0.96, rotate: -2 }}
             animate={{ opacity: 1, scale: 1, rotate: 0 }}
             transition={{ type: 'spring', stiffness: 180, damping: 18 }}
-            className="relative mx-auto w-full max-w-sm rounded-sm bg-white p-3 pb-10 text-slate-700 shadow-[0_28px_70px_rgba(0,0,0,.45)]"
+            className="relative mx-auto w-full max-w-sm rounded-sm bg-white p-3 pb-10 text-slate-700 shadow-[0_28px_70px_rgba(0,0,0,.45)] md:max-w-md"
           >
-            <img src={photos[activePhoto].url} alt={photos[activePhoto].label} className="aspect-[3/4] w-full rounded-sm object-cover" />
-            <figcaption className="absolute inset-x-0 bottom-3 text-center font-handwriting text-2xl text-pink-500">A moment to keep forever</figcaption>
+            <div className="flex aspect-[4/5] w-full items-center justify-center rounded-sm bg-pink-50">
+              <img src={photos[activePhoto].url} alt={photos[activePhoto].label} className="h-full w-full rounded-sm object-contain" />
+            </div>
+            <figcaption className="absolute inset-x-0 bottom-3 text-center font-handwriting text-2xl text-pink-500">{photos[activePhoto].label === 'Aarya and Aashu' ? 'A special memory together' : 'A moment to keep forever'}</figcaption>
             <Heart className="absolute right-5 top-5 fill-pink-400 text-pink-400 drop-shadow-md" size={25} aria-hidden="true" />
           </motion.figure>
 
-          <div className="grid grid-cols-4 gap-2 sm:grid-cols-6 sm:gap-3 lg:grid-cols-3">
+          <div className="grid grid-cols-4 gap-2 sm:grid-cols-6 sm:gap-3 md:grid-cols-3 lg:grid-cols-3">
             {photos.map((photo, index) => {
               const active = activePhoto === index;
               return (

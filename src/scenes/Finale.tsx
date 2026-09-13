@@ -51,8 +51,8 @@ export default function Finale({ onRestart }: { onRestart: () => void }) {
       <div className="absolute inset-0 z-0">
         <Canvas camera={{ position: [0, 0, 10], fov: 60 }}>
           <ambientLight intensity={0.5} />
-          <Stars radius={100} depth={50} count={5000} factor={4} saturation={0} fade speed={2} />
-          <Sparkles count={500} scale={20} size={4} speed={0.5} opacity={0.5} color="#f9a8d4" />
+          <Stars radius={100} depth={50} count={1800} factor={4} saturation={0} fade speed={2} />
+          <Sparkles count={160} scale={20} size={4} speed={0.5} opacity={0.5} color="#f9a8d4" />
           
           <Float speed={1} rotationIntensity={0.5} floatIntensity={1}>
             <group position={[0, 0, -10]}>

@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { Canvas } from '@react-three/fiber';
-import { Float, Environment, Sparkles } from '@react-three/drei';
+import { Float, Sparkles } from '@react-three/drei';
 import { motion } from 'framer-motion';
 import confetti from 'canvas-confetti';
 import { config } from '../config';
@@ -10,12 +10,10 @@ const flowers = [
 ] as const;
 
 export default function MainReveal({ onNext }: { onNext: () => void }) {
-  const [showNext, setShowNext] = useState(false);
-
   useEffect(() => {
-    // Fire confetti when scene mounts
     const duration = 3000;
     const end = Date.now() + duration;
+    let frameId = 0;
 
     const frame = () => {
       confetti({
@@ -34,12 +32,15 @@ export default function MainReveal({ onNext }: { onNext: () => void }) {
       });
 
       if (Date.now() < end) {
-        requestAnimationFrame(frame);
-      } else {
-        setShowNext(true);
+        frameId = requestAnimationFrame(frame);
       }
     };
     frame();
+
+    return () => {
+      cancelAnimationFrame(frameId);
+      confetti.reset();
+    };
   }, []);
 
   return (
@@ -53,7 +54,7 @@ export default function MainReveal({ onNext }: { onNext: () => void }) {
         <Canvas camera={{ position: [0, 0, 5], fov: 50 }}>
           <ambientLight intensity={0.6} />
           <directionalLight position={[10, 10, 5]} intensity={1} color="#fbcfe8" />
-          <Sparkles count={150} scale={12} size={3} speed={0.2} opacity={0.5} color="#ec4899" />
+          <Sparkles count={72} scale={12} size={3} speed={0.2} opacity={0.5} color="#ec4899" />
           
           {/* Abstract Lily / Flower shapes in background */}
           {flowers.map((position, i) => (
@@ -66,7 +67,6 @@ export default function MainReveal({ onNext }: { onNext: () => void }) {
               </group>
             </Float>
           ))}
-          <Environment preset="sunset" />
         </Canvas>
       </div>
 
@@ -91,16 +91,15 @@ export default function MainReveal({ onNext }: { onNext: () => void }) {
             <span className="italic">From {config.sender}</span>
           </div>
 
-          {showNext && (
-            <motion.button
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              onClick={onNext}
-              className="px-8 py-3 bg-pink-500 hover:bg-pink-600 text-white rounded-full font-semibold shadow-lg transition-transform transform hover:scale-105"
-            >
-              Begin the memory ride
-            </motion.button>
-          )}
+          <motion.button
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            onClick={onNext}
+            className="px-8 py-3 bg-pink-500 hover:bg-pink-600 text-white rounded-full font-semibold shadow-lg transition-transform transform hover:scale-105"
+          >
+            Begin the memory ride
+          </motion.button>
         </motion.div>
       </div>
     </motion.div>

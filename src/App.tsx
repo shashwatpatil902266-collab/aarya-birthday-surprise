@@ -1,6 +1,5 @@
 import { lazy, Suspense, useState, useRef, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Volume2, VolumeX } from 'lucide-react';
 
 const MagicalEntrance = lazy(() => import('./scenes/MagicalEntrance'));
 const MainReveal = lazy(() => import('./scenes/MainReveal'));
@@ -14,7 +13,6 @@ const Finale = lazy(() => import('./scenes/Finale'));
 
 export default function App() {
   const [currentScene, setCurrentScene] = useState(1);
-  const [isMuted, setIsMuted] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const nextScene = () => setCurrentScene((prev) => Math.min(prev + 1, 9));
@@ -36,13 +34,6 @@ export default function App() {
     };
   }, []);
 
-  const toggleMute = () => {
-    if (!audioRef.current) return;
-    const nextMuted = !isMuted;
-    audioRef.current.muted = nextMuted;
-    setIsMuted(nextMuted);
-  };
-
   const restart = () => {
     setCurrentScene(1);
     audioRef.current?.play().catch(() => undefined);
@@ -58,15 +49,6 @@ export default function App() {
           </div>
         </div>
       )}
-      <button
-        type="button"
-        onClick={toggleMute}
-        className="absolute right-4 top-4 z-[60] grid h-10 w-10 place-items-center rounded-full border border-white/40 bg-slate-950/30 text-white shadow-lg backdrop-blur-md transition hover:bg-slate-950/50 focus:outline-none focus:ring-2 focus:ring-white"
-        aria-label={isMuted ? 'Turn music on' : 'Mute music'}
-        title={isMuted ? 'Turn music on' : 'Mute music'}
-      >
-        {isMuted ? <VolumeX size={18} /> : <Volume2 size={18} />}
-      </button>
       <Suspense fallback={<div className="grid h-full place-items-center bg-pearl text-pink-500"><span className="animate-pulse font-serif text-lg">Unwrapping your next surprise…</span></div>}>
       <AnimatePresence mode="wait">
         {currentScene === 1 && <MagicalEntrance key="entrance" onStart={() => { playAudio(); nextScene(); }} />}

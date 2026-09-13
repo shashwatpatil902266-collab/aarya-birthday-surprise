@@ -1,144 +1,108 @@
-import { useState, useMemo, useRef } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
-import { Float, Html, Environment } from '@react-three/drei';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
 import confetti from 'canvas-confetti';
-import * as THREE from 'three';
 import { config } from '../config';
 
-const POP_REQUIREMENT = 5; // how many to pop before next button
-
-function Balloon({ position, color, message, onPop }: any) {
-  const [popped, setPopped] = useState(false);
-  const meshRef = useRef<THREE.Group>(null);
-
-  // floating animation
-  useFrame((state) => {
-    if (meshRef.current && !popped) {
-      meshRef.current.position.y += Math.sin(state.clock.elapsedTime * 2 + position[0]) * 0.005;
-    }
-  });
-
-  const handlePop = (e: any) => {
-    e.stopPropagation();
-    if (popped) return;
-    setPopped(true);
-    onPop(message);
-    
-    // trigger confetti at this rough screen location
-    confetti({
-      particleCount: 30,
-      spread: 60,
-      colors: [color, '#ffffff', '#fbcfe8'],
-      origin: { y: 0.5 } // approximate middle
-    });
-  };
-
-  if (popped) return null;
-
-  return (
-    <group ref={meshRef} position={position} onClick={handlePop}>
-      <Float speed={2} rotationIntensity={0.2} floatIntensity={1}>
-        <mesh castShadow receiveShadow position={[0, 0, 0]}>
-          <sphereGeometry args={[0.6, 32, 32]} />
-          <meshStandardMaterial color={color} roughness={0.2} metalness={0.1} />
-        </mesh>
-        <mesh position={[0, -0.6, 0]}>
-          <coneGeometry args={[0.1, 0.2, 16]} />
-          <meshStandardMaterial color={color} roughness={0.2} metalness={0.1} />
-        </mesh>
-        {/* String */}
-        <mesh position={[0, -1.2, 0]}>
-          <cylinderGeometry args={[0.01, 0.01, 1]} />
-          <meshBasicMaterial color="#d1d5db" />
-        </mesh>
-      </Float>
-    </group>
-  );
-}
+const POP_REQUIREMENT = 5;
+const balloonColors = ['#f37fae', '#a78bfa', '#fb9ab8', '#c4b5fd', '#ec5e9a', '#f5a8bd', '#b694f5', '#e778ab'];
 
 export default function BalloonMessages({ onNext }: { onNext: () => void }) {
-  const [poppedMessages, setPoppedMessages] = useState<string[]>([]);
-  const [currentPopMsg, setCurrentPopMsg] = useState<string | null>(null);
+  const [poppedIds, setPoppedIds] = useState<number[]>([]);
+  const [currentMessage, setCurrentMessage] = useState<string | null>(null);
 
-  const handlePop = (msg: string) => {
-    setPoppedMessages(prev => {
-      if (!prev.includes(msg)) return [...prev, msg];
-      return prev;
+  const popBalloon = (index: number, event: React.MouseEvent<HTMLButtonElement>) => {
+    if (poppedIds.includes(index)) return;
+
+    const box = event.currentTarget.getBoundingClientRect();
+    setPoppedIds((previous) => [...previous, index]);
+    setCurrentMessage(config.balloonMessages[index]);
+    window.setTimeout(() => setCurrentMessage(null), 3200);
+    confetti({
+      particleCount: 36,
+      spread: 70,
+      startVelocity: 24,
+      colors: [balloonColors[index], '#ffffff', '#fbcfe8', '#fef08a'],
+      origin: { x: (box.left + box.width / 2) / window.innerWidth, y: (box.top + box.height / 2) / window.innerHeight },
     });
-    setCurrentPopMsg(msg);
-    setTimeout(() => setCurrentPopMsg(null), 3000); // hide message after 3s
   };
 
-  const balloonData = useMemo(() => {
-    const colors = ['#f472b6', '#d8b4fe', '#fbcfe8', '#e9d5ff', '#ec4899'];
-    return config.balloonMessages.map((msg, i) => ({
-      id: i,
-      msg,
-      color: colors[i % colors.length],
-      pos: [
-        (Math.random() - 0.5) * 8, 
-        (Math.random() - 0.5) * 4, 
-        (Math.random() - 0.5) * 4 - 2
-      ] as [number, number, number]
-    }));
-  }, []);
+  const poppedCount = poppedIds.length;
 
   return (
-    <motion.div 
-      className="w-full h-full relative bg-lilac-100"
+    <motion.section
+      className="relative flex h-full w-full flex-col items-center overflow-hidden bg-gradient-to-b from-[#fff5f8] via-[#f8f0ff] to-[#e9dcfb] px-4 pb-24 pt-20"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      exit={{ opacity: 0, transition: { duration: 1 } }}
+      exit={{ opacity: 0, transition: { duration: 0.45 } }}
     >
-      <div className="absolute inset-0 z-0">
-        <Canvas camera={{ position: [0, 0, 8], fov: 50 }}>
-          <ambientLight intensity={0.5} />
-          <directionalLight position={[5, 10, 5]} intensity={1} color="#ffffff" />
-          
-          {balloonData.map((b) => (
-            <Balloon key={b.id} position={b.pos} color={b.color} message={b.msg} onPop={handlePop} />
-          ))}
-          <Environment preset="apartment" />
-        </Canvas>
+      <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
+        <div className="absolute -left-24 top-1/4 h-64 w-64 rounded-full bg-pink-300/40 blur-3xl" />
+        <div className="absolute -right-20 bottom-8 h-72 w-72 rounded-full bg-violet-300/50 blur-3xl" />
       </div>
 
-      <div className="absolute top-10 w-full flex justify-center z-10 pointer-events-none">
-        <h2 className="text-xl md:text-3xl font-serif text-pink-600 bg-white/60 px-6 py-2 rounded-full backdrop-blur-md">
-          Pop the balloons!
-        </h2>
+      <header className="relative z-10 text-center">
+        <p className="mb-2 text-xs font-semibold uppercase tracking-[0.24em] text-pink-500">A little birthday game</p>
+        <h2 className="font-serif text-3xl font-bold text-pink-600 sm:text-4xl">Pop the balloons</h2>
+        <p className="mt-2 text-sm text-slate-600">Pop any {POP_REQUIREMENT} to reveal sweet notes.</p>
+        <div className="mx-auto mt-4 h-2 w-36 overflow-hidden rounded-full bg-white/70 shadow-inner">
+          <motion.div className="h-full rounded-full bg-pink-400" animate={{ width: `${Math.min(poppedCount, POP_REQUIREMENT) / POP_REQUIREMENT * 100}%` }} />
+        </div>
+        <p className="mt-1 text-xs font-bold text-pink-500">{Math.min(poppedCount, POP_REQUIREMENT)} / {POP_REQUIREMENT} popped</p>
+      </header>
+
+      <div className="relative z-10 grid w-full max-w-2xl grid-cols-4 place-items-center gap-x-2 gap-y-3 pt-7 sm:gap-x-8 sm:gap-y-5 md:max-w-3xl md:gap-x-12 md:pt-10">
+        {config.balloonMessages.map((message, index) => {
+          const isPopped = poppedIds.includes(index);
+          return (
+            <motion.button
+              key={message}
+              type="button"
+              aria-label={isPopped ? `Birthday note ${index + 1} opened` : `Pop balloon ${index + 1}`}
+              disabled={isPopped}
+              onClick={(event) => popBalloon(index, event)}
+              initial={{ opacity: 0, y: 24 }}
+              animate={isPopped ? { opacity: 0, scale: 1.35, rotate: 12 } : { opacity: 1, y: [0, -8, 0], scale: 1 }}
+              transition={isPopped ? { duration: 0.25 } : { delay: index * 0.07, y: { repeat: Infinity, duration: 2.3 + index * 0.09, ease: 'easeInOut' } }}
+              whileTap={isPopped ? undefined : { scale: 0.88 }}
+              className="group relative flex h-28 w-16 items-start justify-center sm:h-36 sm:w-20 md:h-40 md:w-24 disabled:pointer-events-none"
+            >
+              <span className="relative block h-20 w-16 rounded-full shadow-lg transition-transform duration-200 group-hover:scale-105 sm:h-28 sm:w-20 md:h-32 md:w-24" style={{ background: `radial-gradient(circle at 35% 27%, #ffffffaa 0 8%, transparent 9%), linear-gradient(145deg, ${balloonColors[index]}, ${balloonColors[index]}cc)` }}>
+                <span className="absolute -bottom-2 left-1/2 h-3 w-3 -translate-x-1/2 rotate-45" style={{ backgroundColor: balloonColors[index] }} />
+              </span>
+              <span className="absolute top-[5.4rem] h-8 border-l border-pink-300/70 sm:top-[7.4rem] sm:h-10 md:top-[8.4rem]" />
+            </motion.button>
+          );
+        })}
       </div>
 
-      {/* Floating message display */}
-      <AnimatePresence>
-        {currentPopMsg && (
+      <AnimatePresence mode="wait">
+        {currentMessage && (
           <motion.div
-            initial={{ opacity: 0, y: 50, scale: 0.8 }}
+            key={currentMessage}
+            initial={{ opacity: 0, y: 18, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -50, scale: 0.8 }}
-            className="absolute inset-0 m-auto w-max h-max max-w-[80%] z-20 pointer-events-none"
+            exit={{ opacity: 0, y: -12, scale: 0.98 }}
+            className="relative z-20 mx-auto mt-3 max-w-xl rounded-3xl border border-white/70 bg-white/90 px-5 py-4 text-center shadow-xl backdrop-blur-md sm:mt-5 sm:px-8 sm:py-5"
+            aria-live="polite"
           >
-            <div className="bg-white/90 backdrop-blur-lg px-8 py-6 rounded-3xl shadow-2xl border border-pink-200 text-center">
-              <p className="text-2xl font-serif text-slate-700">{currentPopMsg}</p>
-            </div>
+            <p className="font-serif text-lg leading-relaxed text-slate-700 sm:text-xl">{currentMessage}</p>
           </motion.div>
         )}
       </AnimatePresence>
 
-      <div className="absolute bottom-10 w-full flex justify-center z-10 pointer-events-none">
-        <AnimatePresence>
-          {poppedMessages.length >= POP_REQUIREMENT && (
-            <motion.button
-              initial={{ opacity: 0, scale: 0.5 }}
-              animate={{ opacity: 1, scale: 1 }}
-              onClick={onNext}
-              className="px-8 py-4 bg-pink-500 hover:bg-pink-600 text-white rounded-full font-bold shadow-[0_0_20px_rgba(236,72,153,0.6)] pointer-events-auto transition-transform transform hover:scale-105"
-            >
-              Make a birthday wish ✨
-            </motion.button>
-          )}
-        </AnimatePresence>
-      </div>
-    </motion.div>
+      <AnimatePresence>
+        {poppedCount >= POP_REQUIREMENT && (
+          <motion.button
+            type="button"
+            initial={{ opacity: 0, y: 18, scale: 0.92 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            onClick={onNext}
+            className="fixed bottom-6 z-30 rounded-full bg-pink-500 px-7 py-3 font-bold text-white shadow-[0_0_24px_rgba(236,72,153,.45)] transition hover:scale-105 hover:bg-pink-600"
+          >
+            Make a birthday wish <span aria-hidden="true">✨</span>
+          </motion.button>
+        )}
+      </AnimatePresence>
+    </motion.section>
   );
 }
