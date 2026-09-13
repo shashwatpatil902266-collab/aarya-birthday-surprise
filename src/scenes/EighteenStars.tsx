@@ -5,10 +5,10 @@ import { config } from '../config';
 
 export default function EighteenStars({ onNext }: { onNext: () => void }) {
   const [readStars, setReadStars] = useState<number[]>([]);
-  const [activeMessage, setActiveMessage] = useState<string | null>(null);
+  const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
   const handleStarClick = (index: number) => {
-    setActiveMessage(config.eighteenMessages[index]);
+    setActiveIndex(index);
     if (!readStars.includes(index)) {
       setReadStars(prev => [...prev, index]);
     }
@@ -24,11 +24,11 @@ export default function EighteenStars({ onNext }: { onNext: () => void }) {
       exit={{ opacity: 0, transition: { duration: 1 } }}
     >
       <h2 className="text-3xl md:text-5xl font-serif text-pink-600 font-bold mb-8 text-center">
-        18 Stars for 18 Years
+        18 Little Letters for 18 Years
       </h2>
       
       <p className="text-slate-500 mb-12 text-center max-w-md">
-        Tap every star to unlock the letter.
+        Every star holds a different birthday paragraph. Read them all to unlock the letter.
       </p>
 
       <div className="grid grid-cols-6 gap-3 sm:gap-4 md:gap-8 max-w-3xl mx-auto z-10">
@@ -40,6 +40,8 @@ export default function EighteenStars({ onNext }: { onNext: () => void }) {
               whileHover={{ scale: 1.2, rotate: 180 }}
               whileTap={{ scale: 0.9 }}
               onClick={() => handleStarClick(i)}
+              aria-label={`Read birthday note ${i + 1}`}
+              aria-pressed={isRead}
               className={`relative flex items-center justify-center p-3 rounded-full transition-colors ${
                 isRead ? 'bg-pink-100 text-pink-300' : 'bg-pink-400 text-yellow-300 shadow-lg shadow-pink-200'
               }`}
@@ -56,16 +58,19 @@ export default function EighteenStars({ onNext }: { onNext: () => void }) {
       </div>
 
       <AnimatePresence mode="wait">
-        {activeMessage && (
+        {activeIndex !== null && (
           <motion.div
-            key={activeMessage}
+            key={activeIndex}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="mt-8 md:mt-12 bg-white p-5 md:p-6 rounded-2xl shadow-xl max-w-lg w-full text-center border border-pink-100 z-10"
+            className="mt-8 md:mt-12 bg-white p-5 md:p-6 rounded-2xl shadow-xl max-w-xl w-full text-center border border-pink-100 z-10"
           >
-            <p className="text-lg md:text-xl font-serif text-slate-700 leading-relaxed">
-              {activeMessage}
+            <p className="mb-3 text-xs font-bold uppercase tracking-[0.2em] text-pink-400">
+              Birthday note {activeIndex + 1} of 18
+            </p>
+            <p className="text-base md:text-lg font-serif text-slate-700 leading-relaxed">
+              {config.eighteenMessages[activeIndex]}
             </p>
           </motion.div>
         )}
