@@ -1,0 +1,35 @@
+@import "tailwindcss";
+
+@theme {
+  --color-pink-50: #fbf5f5;
+  --color-pink-100: #f5e6e8;
+  --color-pink-200: #ecccd1;
+  --color-pink-300: #dfaab4;
+  --color-pink-400: #cf7c8c;
+  --color-pink-500: #bd596d;
+  --color-pink-600: #9e4053;
+  
+  --color-lilac-100: #f7f5fa;
+  --color-lilac-200: #ebe6f3;
+  --color-lilac-300: #d6ccf0;
+  
+  --color-pearl: #faf9f6;
+  --color-gold: #c5a059;
+  
+  --color-slate-800: #2d2a2a;
+  
+  --font-sans: "Outfit", sans-serif;
+  --font-serif: "Playfair Display", serif;
+  --font-handwriting: "Caveat", cursive;
+}
+
+@layer base {
+  body {
+    @apply bg-pearl text-slate-800 m-0 p-0 overflow-hidden font-sans;
+  }
+}
+
+/* Custom scrollbar to hide it */
+::-webkit-scrollbar {
+  display: none;
+}

@@ -1,0 +1,91 @@
+import { useEffect } from 'react';
+import { Canvas } from '@react-three/fiber';
+import { Stars, Float, Sparkles, OrbitControls } from '@react-three/drei';
+import { motion } from 'framer-motion';
+import confetti from 'canvas-confetti';
+
+export default function Finale({ onRestart }: { onRestart: () => void }) {
+  useEffect(() => {
+    const duration = 15 * 1000;
+    const animationEnd = Date.now() + duration;
+    const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+
+    const randomInRange = (min: number, max: number) => Math.random() * (max - min) + min;
+
+    const interval: any = setInterval(function() {
+      const timeLeft = animationEnd - Date.now();
+
+      if (timeLeft <= 0) {
+        return clearInterval(interval);
+      }
+
+      const particleCount = 50 * (timeLeft / duration);
+      confetti({
+        ...defaults, particleCount,
+        origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 },
+        colors: ['#f472b6', '#d8b4fe', '#fef08a', '#ffffff']
+      });
+      confetti({
+        ...defaults, particleCount,
+        origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 },
+        colors: ['#f472b6', '#d8b4fe', '#fef08a', '#ffffff']
+      });
+    }, 250);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <motion.div 
+      className="w-full h-full relative bg-slate-900"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0, transition: { duration: 1 } }}
+    >
+      <div className="absolute inset-0 z-0">
+        <Canvas camera={{ position: [0, 0, 10], fov: 60 }}>
+          <ambientLight intensity={0.5} />
+          <Stars radius={100} depth={50} count={5000} factor={4} saturation={0} fade speed={2} />
+          <Sparkles count={500} scale={20} size={4} speed={0.5} opacity={0.5} color="#f9a8d4" />
+          
+          <Float speed={1} rotationIntensity={0.5} floatIntensity={1}>
+            <group position={[0, 0, -10]}>
+              {[...Array(10)].map((_, i) => (
+                <mesh key={i} position={[(Math.random() - 0.5) * 20, (Math.random() - 0.5) * 20, (Math.random() - 0.5) * 10]}>
+                  <octahedronGeometry args={[Math.random() * 0.5 + 0.2]} />
+                  <meshBasicMaterial color={['#f472b6', '#d8b4fe', '#ffffff'][i % 3]} />
+                </mesh>
+              ))}
+            </group>
+          </Float>
+          <OrbitControls autoRotate autoRotateSpeed={0.5} enableZoom={false} enablePan={false} />
+        </Canvas>
+      </div>
+
+      <div className="absolute inset-0 z-10 flex flex-col items-center justify-center p-6 pointer-events-none">
+        <motion.div
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 1.5, delay: 1 }}
+          className="text-center bg-black/40 p-10 rounded-3xl backdrop-blur-md border border-pink-500/30 shadow-2xl pointer-events-auto"
+        >
+          <h1 className="text-4xl md:text-6xl font-serif text-pink-300 font-bold mb-6 drop-shadow-lg">
+            Happy 18th Birthday,<br />Miss Marshmallow!
+          </h1>
+          <p className="text-xl md:text-2xl text-pink-100 font-serif mb-12 drop-shadow-md">
+            Keep shining. Keep being you.
+          </p>
+
+          <div className="flex justify-center items-center mt-8">
+            <button
+              onClick={onRestart}
+              className="px-10 py-4 bg-pink-500 hover:bg-pink-600 text-white rounded-full font-bold shadow-[0_0_20px_rgba(236,72,153,0.5)] transition-transform transform hover:scale-105"
+            >
+              Replay the surprise
+            </button>
+          </div>
+        </motion.div>
+      </div>
+    </motion.div>
+  );
+}
