@@ -41,3 +41,7 @@ Stay the same sweet, annoying, caring, and amazing person you are. May this year
 
 Happy Birthday, Marshmallow.`
 }
+
+export const prefersReducedMotion = typeof window !== 'undefined' 
+  ? window.matchMedia('(prefers-reduced-motion: reduce)').matches 
+  : false;

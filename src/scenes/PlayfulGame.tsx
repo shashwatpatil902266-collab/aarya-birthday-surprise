@@ -5,16 +5,24 @@ export default function PlayfulGame({ onNext }: { onNext: () => void }) {
   const [noPosition, setNoPosition] = useState({ x: 0, y: 0 });
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const moveNoButton = () => {
+  const moveNoButton = (e: React.MouseEvent<HTMLButtonElement>) => {
     if (!containerRef.current) return;
     const container = containerRef.current.getBoundingClientRect();
+    const btn = e.currentTarget.getBoundingClientRect();
     
-    // random position within limits
-    const maxX = (container.width / 2) - 60;
-    const maxY = (container.height / 2) - 40;
+    // Find the original layout position by subtracting the current translation
+    const origX = btn.left - noPosition.x;
+    const origY = btn.top - noPosition.y;
     
-    const randomX = (Math.random() * maxX * 2) - maxX;
-    const randomY = (Math.random() * maxY * 2) - maxY;
+    // Calculate maximum allowable translation in each direction with 20px padding
+    const maxMoveLeft = Math.max(0, origX - 20);
+    const maxMoveRight = Math.max(0, container.width - (origX + btn.width) - 20);
+    const maxMoveUp = Math.max(0, origY - 20);
+    const maxMoveDown = Math.max(0, container.height - (origY + btn.height) - 20);
+    
+    // Random position within these strict bounds
+    const randomX = (Math.random() * (maxMoveLeft + maxMoveRight)) - maxMoveLeft;
+    const randomY = (Math.random() * (maxMoveUp + maxMoveDown)) - maxMoveUp;
 
     setNoPosition({ x: randomX, y: randomY });
   };

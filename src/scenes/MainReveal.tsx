@@ -3,7 +3,7 @@ import { Canvas } from '@react-three/fiber';
 import { Float, Sparkles } from '@react-three/drei';
 import { motion } from 'framer-motion';
 import confetti from 'canvas-confetti';
-import { config } from '../config';
+import { config, prefersReducedMotion } from '../config';
 
 const flowers = [
   [-4.1, 2.8, -6], [3.8, 2.2, -7], [-3.5, -2.4, -8], [3.1, -2.5, -6.5], [0.1, 3.7, -9],
@@ -54,11 +54,11 @@ export default function MainReveal({ onNext }: { onNext: () => void }) {
         <Canvas camera={{ position: [0, 0, 5], fov: 50 }}>
           <ambientLight intensity={0.6} />
           <directionalLight position={[10, 10, 5]} intensity={1} color="#fbcfe8" />
-          <Sparkles count={72} scale={12} size={3} speed={0.2} opacity={0.5} color="#ec4899" />
+          {!prefersReducedMotion && <Sparkles count={72} scale={12} size={3} speed={0.2} opacity={0.5} color="#ec4899" />}
           
           {/* Abstract Lily / Flower shapes in background */}
           {flowers.map((position, i) => (
-            <Float key={i} speed={1.5} rotationIntensity={0.5} floatIntensity={2}>
+            <Float key={i} speed={prefersReducedMotion ? 0 : 1.5} rotationIntensity={prefersReducedMotion ? 0 : 0.5} floatIntensity={prefersReducedMotion ? 0 : 2}>
               <group position={position}>
                 <mesh rotation={[Math.PI / 4, Math.PI / 4, 0]}>
                   <octahedronGeometry args={[0.5]} />
@@ -75,7 +75,7 @@ export default function MainReveal({ onNext }: { onNext: () => void }) {
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 1.5, type: "spring" }}
-          className="bg-white/40 backdrop-blur-md p-10 rounded-3xl border border-white/60 shadow-xl max-w-2xl pointer-events-auto"
+          className="relative bg-white/40 backdrop-blur-md p-10 rounded-3xl border border-white/60 shadow-xl max-w-2xl pointer-events-auto"
         >
           <div className="absolute -right-3 -top-8 h-24 w-20 overflow-hidden border-4 border-white bg-slate-200 shadow-lg rotate-12 sm:-right-8 sm:-top-12 sm:h-32 sm:w-24">
              <img src="/jungkook.jpg" alt="Jung Kook" className="h-full w-full object-cover opacity-75" />
