@@ -1,6 +1,7 @@
 import { Canvas } from '@react-three/fiber';
 import { Sparkles, Float, Stars, PresentationControls } from '@react-three/drei';
 import { motion } from 'framer-motion';
+import { prefersReducedMotion } from '../config';
 
 export default function MagicalEntrance({ onStart }: { onStart: () => void }) {
   return (
@@ -17,7 +18,7 @@ export default function MagicalEntrance({ onStart }: { onStart: () => void }) {
           <ambientLight intensity={0.5} />
           <pointLight position={[10, 10, 10]} intensity={1} />
           <Stars radius={100} depth={50} count={1800} factor={4} saturation={0} fade speed={1} />
-          <Sparkles count={80} scale={10} size={2} speed={0.4} opacity={0.3} color="#fbcfe8" />
+          {!prefersReducedMotion && <Sparkles count={80} scale={10} size={2} speed={0.4} opacity={0.3} color="#fbcfe8" />}
           
           <PresentationControls
             global
@@ -25,7 +26,7 @@ export default function MagicalEntrance({ onStart }: { onStart: () => void }) {
             polar={[-Math.PI / 4, Math.PI / 4]}
             azimuth={[-Math.PI / 4, Math.PI / 4]}
           >
-            <Float speed={2} rotationIntensity={0.5} floatIntensity={1}>
+            <Float speed={prefersReducedMotion ? 0 : 2} rotationIntensity={prefersReducedMotion ? 0 : 0.5} floatIntensity={prefersReducedMotion ? 0 : 1}>
               {/* Minimal Gift Box Representation */}
               <group position={[0, -0.5, 0]}>
                 <mesh castShadow receiveShadow>

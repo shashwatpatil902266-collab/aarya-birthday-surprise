@@ -1,24 +1,38 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useLayoutEffect } from 'react';
 import { motion } from 'framer-motion';
 
 export default function PlayfulGame({ onNext }: { onNext: () => void }) {
   const [noPosition, setNoPosition] = useState({ x: 0, y: 0 });
   const containerRef = useRef<HTMLDivElement>(null);
+  const btnRef = useRef<HTMLButtonElement>(null);
+  const originalPosRef = useRef({ left: 0, top: 0, width: 0, height: 0 });
 
-  const moveNoButton = (e: React.MouseEvent<HTMLButtonElement>) => {
+  useLayoutEffect(() => {
+    if (btnRef.current) {
+      const rect = btnRef.current.getBoundingClientRect();
+      originalPosRef.current = {
+        left: rect.left,
+        top: rect.top,
+        width: rect.width,
+        height: rect.height
+      };
+    }
+  }, []);
+
+  const moveNoButton = () => {
     if (!containerRef.current) return;
     const container = containerRef.current.getBoundingClientRect();
-    const btn = e.currentTarget.getBoundingClientRect();
+    const orig = originalPosRef.current;
     
-    // Find the original layout position by subtracting the current translation
-    const origX = btn.left - noPosition.x;
-    const origY = btn.top - noPosition.y;
+    // Calculate bounds relative to the container's true position
+    const relativeOrigX = orig.left - container.left;
+    const relativeOrigY = orig.top - container.top;
     
     // Calculate maximum allowable translation in each direction with 20px padding
-    const maxMoveLeft = Math.max(0, origX - 20);
-    const maxMoveRight = Math.max(0, container.width - (origX + btn.width) - 20);
-    const maxMoveUp = Math.max(0, origY - 20);
-    const maxMoveDown = Math.max(0, container.height - (origY + btn.height) - 20);
+    const maxMoveLeft = Math.max(0, relativeOrigX - 20);
+    const maxMoveRight = Math.max(0, container.width - (relativeOrigX + orig.width) - 20);
+    const maxMoveUp = Math.max(0, relativeOrigY - 20);
+    const maxMoveDown = Math.max(0, container.height - (relativeOrigY + orig.height) - 20);
     
     // Random position within these strict bounds
     const randomX = (Math.random() * (maxMoveLeft + maxMoveRight)) - maxMoveLeft;
@@ -49,6 +63,7 @@ export default function PlayfulGame({ onNext }: { onNext: () => void }) {
           </button>
 
           <motion.button 
+            ref={btnRef}
             onMouseEnter={moveNoButton}
             onClick={moveNoButton}
             animate={{ x: noPosition.x, y: noPosition.y }}

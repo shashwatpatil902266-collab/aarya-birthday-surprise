@@ -3,6 +3,7 @@ import { Canvas } from '@react-three/fiber';
 import { Stars, Float, Sparkles, OrbitControls } from '@react-three/drei';
 import { motion } from 'framer-motion';
 import confetti from 'canvas-confetti';
+import { prefersReducedMotion } from '../config';
 
 const crystals = [
   [-7, 4, -6, 0.35], [-5, -3.5, -7, 0.42], [-2.5, 2.7, -5, 0.28], [1.4, -4.2, -8, 0.46],
@@ -52,9 +53,9 @@ export default function Finale({ onRestart }: { onRestart: () => void }) {
         <Canvas camera={{ position: [0, 0, 10], fov: 60 }}>
           <ambientLight intensity={0.5} />
           <Stars radius={100} depth={50} count={1800} factor={4} saturation={0} fade speed={2} />
-          <Sparkles count={160} scale={20} size={4} speed={0.5} opacity={0.5} color="#f9a8d4" />
+          {!prefersReducedMotion && <Sparkles count={160} scale={20} size={4} speed={0.5} opacity={0.5} color="#f9a8d4" />}
           
-          <Float speed={1} rotationIntensity={0.5} floatIntensity={1}>
+          <Float speed={prefersReducedMotion ? 0 : 1} rotationIntensity={prefersReducedMotion ? 0 : 0.5} floatIntensity={prefersReducedMotion ? 0 : 1}>
             <group position={[0, 0, -10]}>
               {crystals.map(([x, y, z, size], i) => (
                 <mesh key={i} position={[x, y, z]}>
@@ -64,7 +65,7 @@ export default function Finale({ onRestart }: { onRestart: () => void }) {
               ))}
             </group>
           </Float>
-          <OrbitControls autoRotate autoRotateSpeed={0.5} enableZoom={false} enablePan={false} />
+          <OrbitControls autoRotate={!prefersReducedMotion} autoRotateSpeed={0.5} enableZoom={false} enablePan={false} />
         </Canvas>
       </div>
 

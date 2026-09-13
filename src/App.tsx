@@ -63,8 +63,15 @@ export default function App() {
 
   const toggleMute = () => {
     if (audioRef.current) {
-      audioRef.current.muted = !isMuted;
-      setIsMuted(!isMuted);
+      if (audioRef.current.paused) {
+        // Acting as a resume button
+        audioRef.current.muted = false;
+        setIsMuted(false);
+        audioRef.current.play().catch(e => console.log("Audio play failed:", e));
+      } else {
+        audioRef.current.muted = !isMuted;
+        setIsMuted(!isMuted);
+      }
     }
   };
 

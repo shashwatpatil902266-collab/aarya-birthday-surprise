@@ -35,7 +35,8 @@ export default function TheLetter({ onNext }: { onNext: () => void }) {
             transition={{ duration: 0.8, ease: "easeOut" }}
             className="bg-[#fcfaf5] w-full max-w-5xl rounded-sm shadow-2xl flex flex-col md:flex-row overflow-hidden"
             style={{
-              backgroundImage: 'url("/paper-texture.png")',
+              // TODO: self-host this texture in /public once available, to avoid the external dependency
+              backgroundImage: 'url("https://www.transparenttextures.com/patterns/handmade-paper.png")',
               boxShadow: '0 20px 50px rgba(0,0,0,0.1), inset 0 0 60px rgba(200,150,150,0.05)'
             }}
           >
