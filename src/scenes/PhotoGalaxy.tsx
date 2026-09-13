@@ -2,11 +2,13 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Heart, Sparkles } from 'lucide-react';
 
-const photos = Array.from({ length: 5 }, (_, index) => ({
+const rotations = [-7, 5, -3, 7, -5, 4, -6, 3, -4, 6, -2];
+
+const photos = Array.from({ length: 11 }, (_, index) => ({
   id: index,
   url: `/photos/${String(index + 1).padStart(2, '0')}.jpg`,
   label: `Memory ${index + 1}`,
-  rotation: [-7, 5, -3, 7, -5][index],
+  rotation: rotations[index],
 }));
 
 export default function PhotoGalaxy({ onNext }: { onNext: () => void }) {
@@ -47,7 +49,7 @@ export default function PhotoGalaxy({ onNext }: { onNext: () => void }) {
             <Heart className="absolute right-5 top-5 fill-pink-400 text-pink-400 drop-shadow-md" size={25} aria-hidden="true" />
           </motion.figure>
 
-          <div className="grid grid-cols-5 gap-2 sm:gap-3 lg:grid-cols-2">
+          <div className="grid grid-cols-4 gap-2 sm:grid-cols-6 sm:gap-3 lg:grid-cols-3">
             {photos.map((photo, index) => {
               const active = activePhoto === index;
               return (
